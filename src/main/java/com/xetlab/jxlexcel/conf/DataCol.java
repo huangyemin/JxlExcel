@@ -4,6 +4,8 @@ public class DataCol {
 
 	private String name;
 
+	private String dateFormat;
+
 	public DataCol(String name) {
 		this.name = name;
 	}
@@ -16,4 +18,11 @@ public class DataCol {
 		this.name = name;
 	}
 
+	public String getDateFormat() {
+		return dateFormat;
+	}
+
+	public void setDateFormat(String dateFormat) {
+		this.dateFormat = dateFormat;
+	}
 }

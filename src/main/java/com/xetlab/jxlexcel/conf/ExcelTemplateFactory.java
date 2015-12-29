@@ -1,6 +1,10 @@
 package com.xetlab.jxlexcel.conf;
 
 import com.xetlab.jxlexcel.JxlExcelException;
+import org.apache.commons.beanutils.BeanUtilsBean;
+import org.apache.commons.beanutils.BeanUtilsBean2;
+import org.apache.commons.beanutils.ConvertUtils;
+import org.apache.commons.beanutils.converters.DateConverter;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.commons.configuration.XMLConfiguration;
@@ -13,20 +17,21 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ExcelTemplateFactory {
 
     private static ExcelTemplateFactory instance = null;
+    private static Log logger = LogFactory.getLog(ExcelTemplateFactory.class);
     private final long refreshDelay = 30000;
-    private Log logger = LogFactory.getLog(ExcelTemplateFactory.class);
     private Map<String, ExcelTemplate> templateMap = new HashMap<String, ExcelTemplate>();
+    private List<String> defaultPatterns = Arrays.asList(new String[]{"yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss"});
 
     private ExcelTemplateFactory() throws JxlExcelException {
+        BeanUtilsBean.setInstance(new BeanUtilsBean2());
         loadTemplates();
         monitorConfigFile();
+        registerDateConverter(defaultPatterns.toArray(new String[0]));
     }
 
     public static ExcelTemplateFactory getInstance() throws JxlExcelException {
@@ -34,6 +39,19 @@ public class ExcelTemplateFactory {
             instance = new ExcelTemplateFactory();
         }
         return instance;
+    }
+
+    private void registerDateConverter(String... patterns) {
+        List<String> patterList = new ArrayList<String>();
+        for (String pattern : patterns) {
+            if (!defaultPatterns.contains(pattern)) {
+                patterList.add(pattern);
+            }
+        }
+        patterList.addAll(defaultPatterns);
+        DateConverter converter = new DateConverter();
+        converter.setPatterns(patterList.toArray(new String[0]));
+        ConvertUtils.register(converter, Date.class);
     }
 
     private void monitorConfigFile() throws JxlExcelException {
@@ -69,7 +87,7 @@ public class ExcelTemplateFactory {
 
     private void loadTemplates() throws JxlExcelException {
         try {
-            System.out.println("reloadTemplates");
+            logger.debug("loadTemplates");
             templateMap.clear();
             XMLConfiguration xmlConfig = new XMLConfiguration(getClass().getResource("/jxl-excel.xml"));
             List<HierarchicalConfiguration> templates = xmlConfig.configurationsAt("template");
@@ -95,7 +113,13 @@ public class ExcelTemplateFactory {
                 List<HierarchicalConfiguration> dataCols = dataRowConfig.configurationsAt("dataCol");
                 DataRow dataRow = new DataRow();
                 for (HierarchicalConfiguration dataColConf : dataCols) {
-                    dataRow.addProperty(dataColConf.getString(""));
+                    DataCol dataCol = new DataCol(dataColConf.getString(""));
+                    String dateFormat = dataColConf.getString("[@dateFormat]");
+                    if (StringUtils.isNotEmpty(dateFormat)) {
+                        dataCol.setDateFormat(dateFormat);
+                        registerDateConverter(dateFormat);
+                    }
+                    dataRow.addDataCol(dataCol);
                 }
                 excelTemplate.setDataRow(dataRow);
                 templateMap.put(templateName, excelTemplate);

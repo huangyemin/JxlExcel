@@ -13,10 +13,13 @@ import jxl.write.*;
 import jxl.write.biff.RowsExceededException;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.time.DateFormatUtils;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -97,17 +100,21 @@ public class JxlExcelWriter extends JxlExcel {
                 List<Map<String, Object>> subList = inputDatas
                         .subList(from, to);
                 List<String[]> copys = new ArrayList<String[]>();
-                List<DataCol> properties = excelTemplate.getDataCols();
+                List<DataCol> dataCols = excelTemplate.getDataCols();
                 for (Map<String, Object> dataMap : subList) {
-                    String[] rowData = new String[properties.size()];
+                    String[] rowData = new String[dataCols.size()];
                     copys.add(rowData);
-                    for (int j = 0; j < properties.size(); j++) {
-                        DataCol dataCol = properties.get(j);
+                    for (int j = 0; j < dataCols.size(); j++) {
+                        DataCol dataCol = dataCols.get(j);
                         String dataColName = dataCol.getName();
-                        if (!dataMap.containsKey(dataColName)) {
-                            throw new JxlExcelException(String.format("属性%s在Map对象中不存在", dataColName));
+                        Object objVal = dataMap.get(dataColName);
+                        String dateFormat = dataCol.getDateFormat();
+                        if (StringUtils.isNotEmpty(dateFormat) && objVal instanceof Date) {
+                            rowData[j] = DateFormatUtils.format((Date) objVal, dateFormat);
+                        } else {
+                            rowData[j] = ObjectUtils.toString(objVal);
                         }
-                        rowData[j] = ObjectUtils.toString(dataMap.get(dataColName));
+
                     }
                 }
                 return copys;
@@ -124,12 +131,12 @@ public class JxlExcelWriter extends JxlExcel {
                     throws JxlExcelException {
                 List<T> subList = inputDatas.subList(from, to);
                 List<String[]> copys = new ArrayList<String[]>();
-                List<DataCol> properties = excelTemplate.getDataCols();
+                List<DataCol> dataCols = excelTemplate.getDataCols();
                 for (T dataObj : subList) {
-                    String[] rowData = new String[properties.size()];
+                    String[] rowData = new String[dataCols.size()];
                     copys.add(rowData);
-                    for (int j = 0; j < properties.size(); j++) {
-                        DataCol dataCol = properties.get(j);
+                    for (int j = 0; j < dataCols.size(); j++) {
+                        DataCol dataCol = dataCols.get(j);
                         try {
                             rowData[j] = BeanUtils.getSimpleProperty(dataObj,
                                     dataCol.getName());

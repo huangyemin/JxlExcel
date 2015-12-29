@@ -1,5 +1,7 @@
 package com.xetlab.jxlexcel;
 
+import java.util.Date;
+
 public class Account {
 	
 	private String area;
@@ -8,6 +10,7 @@ public class Account {
 	private String bankAccount;
 	private Float amount;
 	private String remark;
+	private Date createTime;
 	public String getArea() {
 		return area;
 	}
@@ -45,4 +48,11 @@ public class Account {
 		this.remark = remark;
 	}
 
+	public Date getCreateTime() {
+		return createTime;
+	}
+
+	public void setCreateTime(Date createTime) {
+		this.createTime = createTime;
+	}
 }

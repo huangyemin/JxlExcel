@@ -88,7 +88,7 @@ public class JxlExcelWriterTest extends Assert {
 
 		excelTemplate.addTitleRow(excelTitleRow);
 		DataRow dataConfig = new DataRow();
-		dataConfig.addProperty("property1", "property2",
+		dataConfig.addDataCol("property1", "property2",
 				"property3", "property4");
 		excelTemplate.setDataRow(dataConfig);
 
@@ -118,13 +118,15 @@ public class JxlExcelWriterTest extends Assert {
 		excelTitleRow = new TitleRow();
 		excelTitleRow.addCol("我是属性1");
 		excelTitleRow.addCol("我是属性2");
+
 		excelTitleRow.addCol("我是属性3");
 		excelTitleRow.addCol("我是属性4");
 
 		excelTemplate.addTitleRow(excelTitleRow);
 		DataRow dataConfig = new DataRow();
-		dataConfig.addProperty("property1", "property2",
+		dataConfig.addDataCol("property1", "property2",
 				"property3", "property4");
+		dataConfig.getDataCols().get(2).setDateFormat("yyyy-MM-dd");
 		excelTemplate.setDataRow(dataConfig);
 		File tmp = createTmpFile("testExportMaps.xls");
 		JxlExcelWriter jxlExcelWriter = new JxlExcelWriter(tmp);
@@ -151,7 +153,7 @@ public class JxlExcelWriterTest extends Assert {
 		excelTemplate.addTitleRow(excelTitleRow);
 		
 		DataRow dataConfig = new DataRow();
-		dataConfig.addProperty("property1", "property2",
+		dataConfig.addDataCol("property1", "property2",
 				"property3", "property4");
 		excelTemplate.setDataRow(dataConfig);
 
@@ -236,6 +238,7 @@ public class JxlExcelWriterTest extends Assert {
 			account.setIdCard("sadfadsfasf");
 			account.setName("1");
 			account.setRemark("asdfasdfasdfasfdasdf");
+			account.setCreateTime(new Date());
 			accounts.add(account);
 		}
 		jxlExcelWriter.writeBeans(accounts);

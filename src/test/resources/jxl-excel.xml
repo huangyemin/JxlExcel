@@ -16,7 +16,7 @@
             <titleCol>身份证</titleCol>
             <titleCol>账号</titleCol>
             <titleCol>金额</titleCol>
-            <titleCol>备注</titleCol>
+            <titleCol>创建时间</titleCol>
         </titleRow>
         <dataRow>
             <dataCol>area</dataCol>
@@ -24,7 +24,7 @@
             <dataCol>idCard</dataCol>
             <dataCol>bankAccount</dataCol>
             <dataCol>amount</dataCol>
-            <dataCol>remark</dataCol>
+            <dataCol dateFormat="yyyy-MM-dd HH:mm:ss">createTime</dataCol>
         </dataRow>
     </template>
     <template name="testWrite">
@@ -43,7 +43,7 @@
             <titleCol>身份证</titleCol>
             <titleCol>账号</titleCol>
             <titleCol>金额</titleCol>
-            <titleCol>备注</titleCol>
+            <titleCol>创建时间</titleCol>
         </titleRow>
         <dataRow>
             <dataCol>area</dataCol>
@@ -51,7 +51,7 @@
             <dataCol>idCard</dataCol>
             <dataCol>bankAccount</dataCol>
             <dataCol>amount</dataCol>
-            <dataCol>remark</dataCol>
+            <dataCol dateFormat="yyyy-MM-dd HH:mm:ss">createTime</dataCol>
         </dataRow>
     </template>
 </templates>

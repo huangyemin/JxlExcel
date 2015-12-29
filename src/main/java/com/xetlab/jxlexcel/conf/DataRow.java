@@ -5,20 +5,24 @@ import java.util.List;
 
 public class DataRow {
 
-    private List<DataCol> properties = new ArrayList<DataCol>();
+    private List<DataCol> dataCols = new ArrayList<DataCol>();
 
-    public void addProperty(String... names) {
+    public void addDataCol(String... names) {
         for (String name : names) {
-            properties.add(new DataCol(name));
+            dataCols.add(new DataCol(name));
         }
     }
 
+    public void addDataCol(DataCol dataCol) {
+        dataCols.add(dataCol);
+    }
+
     public List<DataCol> getDataCols() {
-        return properties;
+        return dataCols;
     }
 
     public int colSize() {
-        return properties.size();
+        return dataCols.size();
     }
 
 }

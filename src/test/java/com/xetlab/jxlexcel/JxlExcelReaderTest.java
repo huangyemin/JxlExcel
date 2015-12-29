@@ -2,12 +2,12 @@ package com.xetlab.jxlexcel;
 
 import com.xetlab.jxlexcel.conf.DataRow;
 import com.xetlab.jxlexcel.conf.ExcelTemplate;
-import com.xetlab.jxlexcel.conf.ExcelTemplateFactory;
 import com.xetlab.jxlexcel.conf.TitleRow;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Map;
 
@@ -38,16 +38,6 @@ public class JxlExcelReaderTest extends Assert {
     }
 
     @Test
-    public void testRefreshEffect() throws Exception {
-        ExcelTemplate template = ExcelTemplateFactory.getInstance().getTemplate("testRead");
-        int titleSize1 = template.getDataRowIndex();
-        Thread.sleep(30000);
-        template = ExcelTemplateFactory.getInstance().getTemplate("testRead");
-        int titleSize2 = template.getDataRowIndex();
-        assertNotEquals(titleSize1, titleSize2);
-    }
-
-    @Test
     public void testConfedTemplate() throws Exception {
         JxlExcelReader reader = getJxlExcelReader();
         reader.setExcelTemplate("testRead");
@@ -57,6 +47,8 @@ public class JxlExcelReaderTest extends Assert {
         reader.setExcelTemplate("testRead");
         List<Account> beans = reader.readBeans(Account.class);
         assertEquals(293, beans.size());
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        assertEquals("2015-01-01 12:00:00", sdf.format(beans.get(0).getCreateTime()));
         reader = getJxlExcelReader();
         reader.setExcelTemplate("testRead");
         List<Map<String, Object>> maps = reader.readMaps();
@@ -123,15 +115,15 @@ public class JxlExcelReaderTest extends Assert {
                     "身份证", "账号", "金额", "备注1234"}));
         } else {
             template.addTitleRow(new TitleRow(new String[]{"村（社区）", "姓名",
-                    "身份证", "账号", "金额", "备注"}));
+                    "身份证", "账号", "金额", "创建时间"}));
         }
 
         DataRow dataRow = new DataRow();
         if (isErrorTpl) {
-            dataRow.addProperty("area", "name", "idCard",
+            dataRow.addDataCol("area", "name", "idCard",
                     "bankAccount", "amount", "remark111");
         } else {
-            dataRow.addProperty("area", "name", "idCard",
+            dataRow.addDataCol("area", "name", "idCard",
                     "bankAccount", "amount", "remark");
         }
 
@@ -158,10 +150,10 @@ public class JxlExcelReaderTest extends Assert {
 
         template.addTitleRow(titleRow);
         template.addTitleRow(new TitleRow(new String[]{"村（社区）", "姓名", "身份证",
-                "账号", "金额", "备注"}));
+                "账号", "金额", "创建时间"}));
 
         DataRow dataRow = new DataRow();
-        dataRow.addProperty("area", "name", "idCard",
+        dataRow.addDataCol("area", "name", "idCard",
                 "bankAccount", "amount", "remark1");
 
         template.setDataRow(dataRow);
@@ -190,7 +182,7 @@ public class JxlExcelReaderTest extends Assert {
                 "身份证", "账号", "金额", "备注1234", "asdfasdf"}));
 
         DataRow dataRow = new DataRow();
-        dataRow.addProperty("area", "name", "idCard",
+        dataRow.addDataCol("area", "name", "idCard",
                 "bankAccount", "amount", "remark", "aaa");
 
         template.setDataRow(dataRow);
