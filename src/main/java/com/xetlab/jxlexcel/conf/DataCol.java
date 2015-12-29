@@ -1,10 +1,10 @@
 package com.xetlab.jxlexcel.conf;
 
-public class Property {
+public class DataCol {
 
 	private String name;
-	
-	public Property(String name) {
+
+	public DataCol(String name) {
 		this.name = name;
 	}
 

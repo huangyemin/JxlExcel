@@ -1,15 +1,15 @@
 package com.xetlab.jxlexcel;
 
-import java.io.InputStream;
-import java.util.List;
-import java.util.Map;
-
+import com.xetlab.jxlexcel.conf.DataRow;
+import com.xetlab.jxlexcel.conf.ExcelTemplate;
+import com.xetlab.jxlexcel.conf.ExcelTemplateFactory;
+import com.xetlab.jxlexcel.conf.TitleRow;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.xetlab.jxlexcel.conf.DataRow;
-import com.xetlab.jxlexcel.conf.ExcelTemplate;
-import com.xetlab.jxlexcel.conf.TitleRow;
+import java.io.InputStream;
+import java.util.List;
+import java.util.Map;
 
 public class JxlExcelReaderTest extends Assert {
 
@@ -35,6 +35,32 @@ public class JxlExcelReaderTest extends Assert {
 
         List<Account> datas = reader.readBeans(Account.class);
         assertEquals(293, datas.size());
+    }
+
+    @Test
+    public void testRefreshEffect() throws Exception {
+        ExcelTemplate template = ExcelTemplateFactory.getInstance().getTemplate("testRead");
+        int titleSize1 = template.getDataRowIndex();
+        Thread.sleep(30000);
+        template = ExcelTemplateFactory.getInstance().getTemplate("testRead");
+        int titleSize2 = template.getDataRowIndex();
+        assertNotEquals(titleSize1, titleSize2);
+    }
+
+    @Test
+    public void testConfedTemplate() throws Exception {
+        JxlExcelReader reader = getJxlExcelReader();
+        reader.setExcelTemplate("testRead");
+        List<String[]> datas = reader.readArrays();
+        assertEquals(293, datas.size());
+        reader = getJxlExcelReader();
+        reader.setExcelTemplate("testRead");
+        List<Account> beans = reader.readBeans(Account.class);
+        assertEquals(293, beans.size());
+        reader = getJxlExcelReader();
+        reader.setExcelTemplate("testRead");
+        List<Map<String, Object>> maps = reader.readMaps();
+        assertEquals(293, maps.size());
     }
 
     @Test

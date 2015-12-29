@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates>
+    <template name="testRead">
+        <titleRow>
+            <titleCol span="6">艓栽植林在地</titleCol>
+        </titleRow>
+        <titleRow>
+            <titleCol>编制单位（盖章）：</titleCol>
+            <titleCol></titleCol>
+            <titleCol span="3">编制日期：</titleCol>
+            <titleCol>单位：元</titleCol>
+        </titleRow>
+        <titleRow>
+            <titleCol>村（社区）</titleCol>
+            <titleCol>姓名</titleCol>
+            <titleCol>身份证</titleCol>
+            <titleCol>账号</titleCol>
+            <titleCol>金额</titleCol>
+            <titleCol>备注</titleCol>
+        </titleRow>
+        <dataRow>
+            <dataCol>area</dataCol>
+            <dataCol>name</dataCol>
+            <dataCol>idCard</dataCol>
+            <dataCol>bankAccount</dataCol>
+            <dataCol>amount</dataCol>
+            <dataCol>remark</dataCol>
+        </dataRow>
+    </template>
+    <template name="testWrite">
+        <titleRow>
+            <titleCol span="6">艓栽植林在地</titleCol>
+        </titleRow>
+        <titleRow>
+            <titleCol>编制单位（盖章）：</titleCol>
+            <titleCol></titleCol>
+            <titleCol span="3">编制日期：</titleCol>
+            <titleCol>单位：元</titleCol>
+        </titleRow>
+        <titleRow>
+            <titleCol>村（社区）</titleCol>
+            <titleCol>姓名</titleCol>
+            <titleCol>身份证</titleCol>
+            <titleCol>账号</titleCol>
+            <titleCol>金额</titleCol>
+            <titleCol>备注</titleCol>
+        </titleRow>
+        <dataRow>
+            <dataCol>area</dataCol>
+            <dataCol>name</dataCol>
+            <dataCol>idCard</dataCol>
+            <dataCol>bankAccount</dataCol>
+            <dataCol>amount</dataCol>
+            <dataCol>remark</dataCol>
+        </dataRow>
+    </template>
+</templates>

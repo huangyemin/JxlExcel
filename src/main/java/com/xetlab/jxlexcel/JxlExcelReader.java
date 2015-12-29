@@ -1,28 +1,20 @@
 package com.xetlab.jxlexcel;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
+import com.xetlab.jxlexcel.conf.DataCol;
+import com.xetlab.jxlexcel.conf.DummyTitleCol;
+import com.xetlab.jxlexcel.conf.TitleCol;
+import com.xetlab.jxlexcel.conf.TitleRow;
 import jxl.Sheet;
 import jxl.Workbook;
 import jxl.read.biff.BiffException;
-
 import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.lang3.StringUtils;
 
-import com.xetlab.jxlexcel.conf.DummyTitleCol;
-import com.xetlab.jxlexcel.conf.Property;
-import com.xetlab.jxlexcel.conf.TitleCol;
-import com.xetlab.jxlexcel.conf.TitleRow;
+import java.io.*;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class JxlExcelReader extends JxlExcel {
 
@@ -44,8 +36,8 @@ public class JxlExcelReader extends JxlExcel {
 					List<T> datas = new ArrayList<T>();
 					for (int row = excelTemplate.getDataRowIndex(); row < sheet
 							.getRows(); row++) {
-						List<Property> properties = excelTemplate
-								.getProperties();
+						List<DataCol> properties = excelTemplate
+								.getDataCols();
 						T beanObj = clasz.newInstance();
 						datas.add(beanObj);
 						for (int col = 0; col < properties.size(); col++) {
@@ -102,7 +94,7 @@ public class JxlExcelReader extends JxlExcel {
 				List<Map<String, Object>> datas = new ArrayList<Map<String, Object>>();
 				for (int row = excelTemplate.getDataRowIndex(); row < sheet
 						.getRows(); row++) {
-					List<Property> properties = excelTemplate.getProperties();
+					List<DataCol> properties = excelTemplate.getDataCols();
 					Map<String, Object> mapData = new HashMap<String, Object>();
 					datas.add(mapData);
 					for (int col = 0; col < properties.size(); col++) {
@@ -118,7 +110,7 @@ public class JxlExcelReader extends JxlExcel {
 
 	private <T> List<T> read(ReadPolicy<T> readPolicy) throws JxlExcelException {
 		checkTemplate();
-		Workbook wb = null;
+		Workbook wb;
 		try {
 			wb = Workbook.getWorkbook(is);
 		} catch (BiffException e) {

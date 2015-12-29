@@ -1,19 +1,14 @@
 package com.xetlab.jxlexcel;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.junit.Assert;
-import org.junit.Test;
-
 import com.xetlab.jxlexcel.conf.DataRow;
 import com.xetlab.jxlexcel.conf.ExcelTemplate;
 import com.xetlab.jxlexcel.conf.TitleRow;
+import org.junit.Assert;
+import org.junit.Test;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
 
 public class JxlExcelWriterTest extends Assert {
 
@@ -93,8 +88,8 @@ public class JxlExcelWriterTest extends Assert {
 
 		excelTemplate.addTitleRow(excelTitleRow);
 		DataRow dataConfig = new DataRow();
-		dataConfig.addProperty(new String[] { "property1", "property2",
-				"property3", "property4" });
+		dataConfig.addProperty("property1", "property2",
+				"property3", "property4");
 		excelTemplate.setDataRow(dataConfig);
 
 		File tmp = createTmpFile("testExportPojoBeans.xls");
@@ -128,8 +123,8 @@ public class JxlExcelWriterTest extends Assert {
 
 		excelTemplate.addTitleRow(excelTitleRow);
 		DataRow dataConfig = new DataRow();
-		dataConfig.addProperty(new String[] { "property1", "property2",
-				"property3", "property4" });
+		dataConfig.addProperty("property1", "property2",
+				"property3", "property4");
 		excelTemplate.setDataRow(dataConfig);
 		File tmp = createTmpFile("testExportMaps.xls");
 		JxlExcelWriter jxlExcelWriter = new JxlExcelWriter(tmp);
@@ -156,8 +151,8 @@ public class JxlExcelWriterTest extends Assert {
 		excelTemplate.addTitleRow(excelTitleRow);
 		
 		DataRow dataConfig = new DataRow();
-		dataConfig.addProperty(new String[] { "property1", "property2",
-				"property3", "property4" });
+		dataConfig.addProperty("property1", "property2",
+				"property3", "property4");
 		excelTemplate.setDataRow(dataConfig);
 
 		File tmp = createTmpFile("testTitleLenNotEqualDataLenTemplate.xls");
@@ -198,6 +193,71 @@ public class JxlExcelWriterTest extends Assert {
 		} catch (Exception e) {
 			assertTrue(e instanceof JxlExcelException);
 		}
+	}
+
+	@Test
+	public void testWriteTemplateByConfig() throws Exception {
+		File tmp = createTmpFile("testWriteTemplateByConfig.xls");
+		JxlExcelWriter jxlExcelWriter = new JxlExcelWriter(tmp);
+		jxlExcelWriter.setExcelTemplate("testWrite");
+		jxlExcelWriter.writeTemplate();
+	}
+
+	@Test
+	public void testWriteMapsByConfig() throws Exception {
+		File tmp = createTmpFile("testWriteMapsByConfig.xls");
+		JxlExcelWriter jxlExcelWriter = new JxlExcelWriter(tmp);
+		jxlExcelWriter.setExcelTemplate("testWrite");
+		List<Map<String, Object>> accounts = new ArrayList<Map<String, Object>>();
+		for (int i = 0; i < 10; i++) {
+			Map<String, Object> account = new HashMap<String, Object>();
+			account.put("amount", 22f);
+			account.put("area", "test中语言工要夺加艺术团");
+			account.put("bankAccount", "asffdasafffffff");
+			account.put("idCard", "sadfadsfasf");
+			account.put("name", "1");
+			account.put("remark", "asdfasdfasdfasfdasdf");
+			accounts.add(account);
+		}
+		jxlExcelWriter.writeMaps(accounts);
+	}
+
+	@Test
+	public void testWriteBeansByConfig() throws Exception {
+		File tmp = createTmpFile("testWriteBeansByConfig.xls");
+		JxlExcelWriter jxlExcelWriter = new JxlExcelWriter(tmp);
+		jxlExcelWriter.setExcelTemplate("testWrite");
+		List<Account> accounts = new ArrayList<Account>();
+		for (int i = 0; i < 10; i++) {
+			Account account = new Account();
+			account.setAmount(22f);
+			account.setArea("test中语言工要夺加艺术团");
+			account.setBankAccount("asffdasafffffff");
+			account.setIdCard("sadfadsfasf");
+			account.setName("1");
+			account.setRemark("asdfasdfasdfasfdasdf");
+			accounts.add(account);
+		}
+		jxlExcelWriter.writeBeans(accounts);
+	}
+
+	@Test
+	public void testWriteArraysByConfig() throws Exception {
+		File tmp = createTmpFile("testWriteArraysByConfig.xls");
+		JxlExcelWriter jxlExcelWriter = new JxlExcelWriter(tmp);
+		jxlExcelWriter.setExcelTemplate("testWrite");
+		List<String[]> accounts = new ArrayList<String[]>();
+		for (int i = 0; i < 10; i++) {
+			String[] account = new String[6];
+			account[4] = "22";
+			account[0] = "test中语言工要夺加艺术团";
+			account[3] = "asffdasafffffff";
+			account[2] = "sadfadsfasf";
+			account[1] = "1";
+			account[5] = "asdfasdfasdfasfdasdf";
+			accounts.add(account);
+		}
+		jxlExcelWriter.writeArrays(accounts);
 	}
 
 	@Test

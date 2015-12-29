@@ -1,41 +1,49 @@
 package com.xetlab.jxlexcel.conf;
 
+import com.xetlab.jxlexcel.JxlExcelException;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import com.xetlab.jxlexcel.JxlExcelException;
-
 public class ExcelTemplate {
 
-	private List<TitleRow> titleRows = new ArrayList<TitleRow>();
-	private DataRow dataRow;
+    private List<TitleRow> titleRows = new ArrayList<TitleRow>();
+    private DataRow dataRow;
+    private String name;
 
-	public void addTitleRow(TitleRow titleRow) throws JxlExcelException {
-		titleRows.add(titleRow);
-	}
+    public void addTitleRow(TitleRow titleRow) throws JxlExcelException {
+        titleRows.add(titleRow);
+    }
 
-	public List<TitleRow> getTitleRows() {
-		return titleRows;
-	}
+    public List<TitleRow> getTitleRows() {
+        return titleRows;
+    }
 
-	public int getDataRowIndex() {
-		return titleRows.size();
-	}
+    public int getDataRowIndex() {
+        return titleRows.size();
+    }
 
-	public DataRow getDataRow() {
-		return dataRow;
-	}
+    public DataRow getDataRow() {
+        return dataRow;
+    }
 
-	public void setDataRow(DataRow dataRow) {
-		this.dataRow = dataRow;
-	}
+    public void setDataRow(DataRow dataRow) {
+        this.dataRow = dataRow;
+    }
 
-	public int getColSize() {
-		return titleRows.get(0).colSize();
-	}
+    public int getColSize() {
+        return titleRows.get(0).colSize();
+    }
 
-	public List<Property> getProperties() {
-		return dataRow.getProperties();
-	}
+    public List<DataCol> getDataCols() {
+        return dataRow.getDataCols();
+    }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }

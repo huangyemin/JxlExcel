@@ -1,9 +1,10 @@
 package com.xetlab.jxlexcel;
 
-import java.util.List;
-
 import com.xetlab.jxlexcel.conf.ExcelTemplate;
+import com.xetlab.jxlexcel.conf.ExcelTemplateFactory;
 import com.xetlab.jxlexcel.conf.TitleRow;
+
+import java.util.List;
 
 public class JxlExcel {
 
@@ -47,4 +48,7 @@ public class JxlExcel {
         checkTemplateColSize();
     }
 
+    public void setExcelTemplate(String templateName) throws JxlExcelException {
+        setExcelTemplate(ExcelTemplateFactory.getInstance().getTemplate(templateName));
+    }
 }
