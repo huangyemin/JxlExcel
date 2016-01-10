@@ -24,7 +24,7 @@
             <dataCol>idCard</dataCol>
             <dataCol>bankAccount</dataCol>
             <dataCol>amount</dataCol>
-            <dataCol dateFormat="yyyy-MM-dd HH:mm:ss">createTime</dataCol>
+            <dataCol convertor="datetime">createTime</dataCol>
         </dataRow>
     </template>
     <template name="testWrite">
@@ -51,7 +51,7 @@
             <dataCol>idCard</dataCol>
             <dataCol>bankAccount</dataCol>
             <dataCol>amount</dataCol>
-            <dataCol dateFormat="yyyy-MM-dd HH:mm:ss">createTime</dataCol>
+            <dataCol convertor="datetime">createTime</dataCol>
         </dataRow>
     </template>
 </templates>

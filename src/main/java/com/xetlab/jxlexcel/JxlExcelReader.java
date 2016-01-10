@@ -4,6 +4,7 @@ import com.xetlab.jxlexcel.conf.DataCol;
 import com.xetlab.jxlexcel.conf.DummyTitleCol;
 import com.xetlab.jxlexcel.conf.TitleCol;
 import com.xetlab.jxlexcel.conf.TitleRow;
+import com.xetlab.jxlexcel.conf.convertor.ConvertorUtil;
 import jxl.Sheet;
 import jxl.Workbook;
 import jxl.read.biff.BiffException;
@@ -14,9 +15,10 @@ import org.apache.commons.logging.LogFactory;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class JxlExcelReader extends JxlExcel {
 
@@ -32,10 +34,10 @@ public class JxlExcelReader extends JxlExcel {
         this.is = is;
     }
 
-    public <T> List<T> readBeans(final Class<T> clasz) throws JxlExcelException {
+    public <T> List<T> readBeans(final Class<T> clasz) {
         return read(new ReadPolicy<T>() {
             @Override
-            List<T> readDatasFromSheet(Sheet sheet) throws JxlExcelException {
+            List<T> readDatasFromSheet(Sheet sheet) {
                 try {
                     List<T> datas = new ArrayList<T>();
                     for (int row = excelTemplate.getDataRowIndex(); row < sheet
@@ -50,7 +52,13 @@ public class JxlExcelReader extends JxlExcel {
                             clasz.getDeclaredField(propertyName);
                             String value = sheet.getCell(col, row)
                                     .getContents().trim();
-                            BeanUtils.setProperty(beanObj, propertyName, value);
+                            String convertor = dataCol.getConvertor();
+                            if (StringUtils.isNotEmpty(convertor)) {
+                                BeanUtils.setProperty(beanObj, propertyName, ConvertorUtil.convertToType(value, convertor));
+                            } else {
+                                BeanUtils.setProperty(beanObj, propertyName, value);
+                            }
+
                         }
                     }
                     return datas;
@@ -71,11 +79,10 @@ public class JxlExcelReader extends JxlExcel {
         });
     }
 
-    public List<String[]> readArrays() throws JxlExcelException {
+    public List<String[]> readArrays() {
         return read(new ReadPolicy<String[]>() {
             @Override
-            List<String[]> readDatasFromSheet(Sheet sheet)
-                    throws JxlExcelException {
+            List<String[]> readDatasFromSheet(Sheet sheet) {
                 int colCnt = excelTemplate.getColSize();
                 List<String[]> datas = new ArrayList<String[]>();
                 for (int row = excelTemplate.getDataRowIndex(); row < sheet
@@ -92,7 +99,7 @@ public class JxlExcelReader extends JxlExcel {
         });
     }
 
-    public List<Map<String, Object>> readMaps() throws JxlExcelException {
+    public List<Map<String, Object>> readMaps() {
         return read(new ReadPolicy<Map<String, Object>>() {
             @Override
             List<Map<String, Object>> readDatasFromSheet(Sheet sheet) {
@@ -106,8 +113,9 @@ public class JxlExcelReader extends JxlExcel {
                         String value = sheet.getCell(col, row).getContents()
                                 .trim();
                         DataCol dataCol = dataCols.get(col);
-                        if (StringUtils.isNotEmpty(dataCol.getDateFormat())) {
-                            mapData.put(dataCol.getName(), parseDate(value, dataCol.getDateFormat()));
+                        String convertor = dataCol.getConvertor();
+                        if (StringUtils.isNotEmpty(convertor)) {
+                            mapData.put(dataCol.getName(), ConvertorUtil.convertToType(value, convertor));
                         } else {
                             mapData.put(dataCol.getName(), value);
                         }
@@ -118,17 +126,7 @@ public class JxlExcelReader extends JxlExcel {
         });
     }
 
-    private Date parseDate(String value, String format) {
-        SimpleDateFormat sdf = new SimpleDateFormat(format);
-        try {
-            return sdf.parse(value);
-        } catch (ParseException e) {
-            logger.warn("解析时间出错", e);
-            return null;
-        }
-    }
-
-    private <T> List<T> read(ReadPolicy<T> readPolicy) throws JxlExcelException {
+    private <T> List<T> read(ReadPolicy<T> readPolicy) {
         checkTemplate();
         Workbook wb;
         try {
@@ -148,10 +146,9 @@ public class JxlExcelReader extends JxlExcel {
     }
 
     abstract class ReadPolicy<T> {
-        abstract List<T> readDatasFromSheet(Sheet sheet)
-                throws JxlExcelException;
+        abstract List<T> readDatasFromSheet(Sheet sheet);
 
-        void checkTemplateTitles(Sheet sheet) throws JxlExcelException {
+        void checkTemplateTitles(Sheet sheet) {
             if (sheet.getColumns() != excelTemplate.getColSize()) {
                 throw new JxlExcelException(String.format(
                         "读取的excel与模板不匹配：期望%s列，实际为%s列",

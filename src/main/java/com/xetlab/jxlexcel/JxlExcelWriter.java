@@ -3,6 +3,7 @@ package com.xetlab.jxlexcel;
 import com.xetlab.jxlexcel.conf.DataCol;
 import com.xetlab.jxlexcel.conf.TitleCol;
 import com.xetlab.jxlexcel.conf.TitleRow;
+import com.xetlab.jxlexcel.conf.convertor.ConvertorUtil;
 import jxl.Cell;
 import jxl.Workbook;
 import jxl.format.Alignment;
@@ -14,12 +15,11 @@ import jxl.write.biff.RowsExceededException;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.time.DateFormatUtils;
+import org.apache.commons.lang.reflect.FieldUtils;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -37,7 +37,7 @@ public class JxlExcelWriter extends JxlExcel {
         this.os = os;
     }
 
-    public void writeTemplate() throws JxlExcelException {
+    public void writeTemplate() {
         checkTemplate();
         WritableWorkbook wb = null;
         try {
@@ -58,7 +58,7 @@ public class JxlExcelWriter extends JxlExcel {
 
     }
 
-    private void close(WritableWorkbook wb) throws JxlExcelException {
+    private void close(WritableWorkbook wb) {
         if (wb != null) {
             try {
                 wb.close();
@@ -70,11 +70,10 @@ public class JxlExcelWriter extends JxlExcel {
         }
     }
 
-    public <T> void writeArrays(List<T[]> datas) throws JxlExcelException {
+    public <T> void writeArrays(List<T[]> datas) {
         write(new WritePolicy<T[]>(datas) {
             @Override
-            List<String[]> copyOfRange(int from, int to)
-                    throws JxlExcelException {
+            List<String[]> copyOfRange(int from, int to) {
                 List<T[]> subList = inputDatas.subList(from, to);
                 List<String[]> copys = new ArrayList<String[]>();
                 for (Object[] item : subList) {
@@ -90,13 +89,11 @@ public class JxlExcelWriter extends JxlExcel {
         });
     }
 
-    public void writeMaps(final List<Map<String, Object>> datas)
-            throws JxlExcelException {
+    public void writeMaps(final List<Map<String, Object>> datas) {
 
         write(new WritePolicy<Map<String, Object>>(datas) {
             @Override
-            List<String[]> copyOfRange(int from, int to)
-                    throws JxlExcelException {
+            List<String[]> copyOfRange(int from, int to) {
                 List<Map<String, Object>> subList = inputDatas
                         .subList(from, to);
                 List<String[]> copys = new ArrayList<String[]>();
@@ -108,9 +105,9 @@ public class JxlExcelWriter extends JxlExcel {
                         DataCol dataCol = dataCols.get(j);
                         String dataColName = dataCol.getName();
                         Object objVal = dataMap.get(dataColName);
-                        String dateFormat = dataCol.getDateFormat();
-                        if (StringUtils.isNotEmpty(dateFormat) && objVal instanceof Date) {
-                            rowData[j] = DateFormatUtils.format((Date) objVal, dateFormat);
+                        String convertor = dataCol.getConvertor();
+                        if (StringUtils.isNotEmpty(convertor)) {
+                            rowData[j] = ConvertorUtil.convert(objVal, convertor);
                         } else {
                             rowData[j] = ObjectUtils.toString(objVal);
                         }
@@ -124,11 +121,10 @@ public class JxlExcelWriter extends JxlExcel {
 
     }
 
-    public <T> void writeBeans(final List<T> datas) throws JxlExcelException {
+    public <T> void writeBeans(final List<T> datas) {
         write(new WritePolicy<T>(datas) {
             @Override
-            List<String[]> copyOfRange(int from, int to)
-                    throws JxlExcelException {
+            List<String[]> copyOfRange(int from, int to) {
                 List<T> subList = inputDatas.subList(from, to);
                 List<String[]> copys = new ArrayList<String[]>();
                 List<DataCol> dataCols = excelTemplate.getDataCols();
@@ -138,8 +134,14 @@ public class JxlExcelWriter extends JxlExcel {
                     for (int j = 0; j < dataCols.size(); j++) {
                         DataCol dataCol = dataCols.get(j);
                         try {
-                            rowData[j] = BeanUtils.getSimpleProperty(dataObj,
-                                    dataCol.getName());
+                            String convertor = dataCol.getConvertor();
+                            if (StringUtils.isNotEmpty(convertor)) {
+                                Object objVal = FieldUtils.readDeclaredField(dataObj, dataCol.getName(), true);
+                                rowData[j] = ConvertorUtil.convert(objVal, convertor);
+                            } else {
+                                rowData[j] = BeanUtils.getSimpleProperty(dataObj,
+                                        dataCol.getName());
+                            }
                         } catch (IllegalAccessException e) {
                             throw new JxlExcelException(e);
                         } catch (InvocationTargetException e) {
@@ -154,7 +156,7 @@ public class JxlExcelWriter extends JxlExcel {
         });
     }
 
-    private <T> void write(WritePolicy<T> writePolicy) throws JxlExcelException {
+    private <T> void write(WritePolicy<T> writePolicy) {
         WritableWorkbook wb = null;
         try {
             wb = Workbook.createWorkbook(os);
@@ -338,7 +340,7 @@ public class JxlExcelWriter extends JxlExcel {
         }
 
         abstract List<String[]> copyOfRange(int from, int to)
-                throws JxlExcelException;
+                ;
 
         int getDataLength() {
             return inputDatas.size();

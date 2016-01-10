@@ -1,7 +1,5 @@
 package com.xetlab.jxlexcel.conf;
 
-import com.xetlab.jxlexcel.JxlExcelException;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,7 +9,7 @@ public class ExcelTemplate {
     private DataRow dataRow;
     private String name;
 
-    public void addTitleRow(TitleRow titleRow) throws JxlExcelException {
+    public void addTitleRow(TitleRow titleRow) {
         titleRows.add(titleRow);
     }
 

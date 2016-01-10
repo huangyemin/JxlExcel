@@ -4,7 +4,7 @@ public class DataCol {
 
 	private String name;
 
-	private String dateFormat;
+	private String convertor;
 
 	public DataCol(String name) {
 		this.name = name;
@@ -18,11 +18,11 @@ public class DataCol {
 		this.name = name;
 	}
 
-	public String getDateFormat() {
-		return dateFormat;
+	public String getConvertor() {
+		return convertor;
 	}
 
-	public void setDateFormat(String dateFormat) {
-		this.dateFormat = dateFormat;
+	public void setConvertor(String convertor) {
+		this.convertor = convertor;
 	}
 }

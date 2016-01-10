@@ -126,7 +126,7 @@ public class JxlExcelWriterTest extends Assert {
 		DataRow dataConfig = new DataRow();
 		dataConfig.addDataCol("property1", "property2",
 				"property3", "property4");
-		dataConfig.getDataCols().get(2).setDateFormat("yyyy-MM-dd");
+		dataConfig.getDataCols().get(2).setConvertor("date");
 		excelTemplate.setDataRow(dataConfig);
 		File tmp = createTmpFile("testExportMaps.xls");
 		JxlExcelWriter jxlExcelWriter = new JxlExcelWriter(tmp);
@@ -219,6 +219,7 @@ public class JxlExcelWriterTest extends Assert {
 			account.put("idCard", "sadfadsfasf");
 			account.put("name", "1");
 			account.put("remark", "asdfasdfasdfasfdasdf");
+			account.put("createTime", new Date());
 			accounts.add(account);
 		}
 		jxlExcelWriter.writeMaps(accounts);

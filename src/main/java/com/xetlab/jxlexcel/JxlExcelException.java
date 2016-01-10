@@ -1,6 +1,6 @@
 package com.xetlab.jxlexcel;
 
-public class JxlExcelException extends Exception {
+public class JxlExcelException extends RuntimeException {
 
 	public JxlExcelException() {
 

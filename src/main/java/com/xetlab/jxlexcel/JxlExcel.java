@@ -15,13 +15,13 @@ public class JxlExcel {
         this.excelTemplate = excelTemplate;
     }
 
-    private void checkTemplateNotNull() throws JxlExcelException {
+    private void checkTemplateNotNull() {
         if (excelTemplate == null) {
             throw new JxlExcelException("excel模板配置未初始化");
         }
     }
 
-    private void checkTemplateColSize() throws JxlExcelException {
+    private void checkTemplateColSize() {
         List<TitleRow> titleRows = excelTemplate.getTitleRows();
         if (titleRows.size() < 1) {
             throw new JxlExcelException("必须至少定义一个标题行");
@@ -43,12 +43,12 @@ public class JxlExcel {
         }
     }
 
-    protected void checkTemplate() throws JxlExcelException {
+    protected void checkTemplate() {
         checkTemplateNotNull();
         checkTemplateColSize();
     }
 
-    public void setExcelTemplate(String templateName) throws JxlExcelException {
+    public void setExcelTemplate(String templateName) {
         setExcelTemplate(ExcelTemplateFactory.getInstance().getTemplate(templateName));
     }
 }
