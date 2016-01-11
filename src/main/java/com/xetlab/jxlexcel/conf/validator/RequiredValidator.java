@@ -13,6 +13,6 @@ public class RequiredValidator extends Validator {
 
     @Override
     public boolean validate(String input) {
-        return StringUtils.isEmpty(input);
+        return StringUtils.isNotEmpty(input);
     }
 }

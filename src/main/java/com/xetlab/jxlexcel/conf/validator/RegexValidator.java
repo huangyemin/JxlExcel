@@ -7,8 +7,11 @@ public class RegexValidator extends Validator {
 
     private String regex;
 
-    public RegexValidator(String regex) {
+    public RegexValidator() {
         errorMsg = "格式不匹配";
+    }
+
+    public void setRegex(String regex) {
         this.regex = regex;
     }
 

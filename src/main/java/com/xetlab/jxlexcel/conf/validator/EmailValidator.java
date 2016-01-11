@@ -6,7 +6,7 @@ package com.xetlab.jxlexcel.conf.validator;
 public class EmailValidator extends RegexValidator {
 
     public EmailValidator() {
-        super("^\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*$");
+        setRegex("^\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*$");
         errorMsg = "不是正确的邮箱格式";
     }
 
