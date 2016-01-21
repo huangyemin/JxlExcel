@@ -7,7 +7,7 @@ public class EmailValidator extends RegexValidator {
 
     public EmailValidator() {
         setRegex("^\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*$");
-        errorMsg = "不是正确的邮箱格式";
+        defaultMsg = "不是正确的邮箱格式";
     }
 
 }

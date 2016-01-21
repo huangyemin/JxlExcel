@@ -7,7 +7,7 @@ public class ChineseValidator extends RegexValidator {
 
     public ChineseValidator() {
         setRegex("^[\\u4e00-\\u9fa5]+$");
-        errorMsg = "不是正确的手机号";
+        defaultMsg = "不是中文";
     }
 
 }

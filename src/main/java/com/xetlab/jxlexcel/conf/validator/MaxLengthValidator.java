@@ -9,7 +9,7 @@ public class MaxLengthValidator extends Validator {
 
     public void setMaxLength(Integer maxLength) {
         this.maxLength = maxLength;
-        errorMsg = "最大长度为" + maxLength;
+        defaultMsg = "最大长度为" + maxLength;
     }
 
     @Override

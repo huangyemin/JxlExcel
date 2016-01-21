@@ -7,7 +7,7 @@ public class EnglishValidator extends RegexValidator {
 
     public EnglishValidator() {
         setRegex("^[A-Za-z]+$");
-        errorMsg = "不是正确的手机号";
+        defaultMsg = "不是英文";
     }
 
 }

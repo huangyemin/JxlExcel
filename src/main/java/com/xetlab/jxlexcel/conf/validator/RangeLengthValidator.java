@@ -21,7 +21,7 @@ public class RangeLengthValidator extends Validator {
         if (minLength == null || maxLength == null) {
             throw new IllegalArgumentException("参数设置不正确");
         }
-        errorMsg = String.format("长度必须在[%s-%s]间", minLength, maxLength);
+        defaultMsg = String.format("长度必须在[%s-%s]间", minLength, maxLength);
         return input.length() >= minLength && input.length() <= maxLength;
     }
 

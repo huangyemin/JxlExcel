@@ -1,5 +1,7 @@
 package com.xetlab.jxlexcel.conf.validator;
 
+import com.xetlab.jxlexcel.JxlExcelException;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -8,7 +10,7 @@ import java.util.Map;
  */
 public class Validators {
     private static Validators instance = null;
-    private Map<String, Validator> validatorMap = new HashMap<String, Validator>();
+    private Map<String, Class> validatorMap = new HashMap<String, Class>();
 
     private Validators() {
         initDefaultValidators();
@@ -22,31 +24,38 @@ public class Validators {
     }
 
     private void initDefaultValidators() {
-        validatorMap.put("num", new NumValidator());
-        validatorMap.put("min", new MinValidator());
-        validatorMap.put("max", new MaxValidator());
-        validatorMap.put("minLength", new MinLengthValidator());
-        validatorMap.put("maxLength", new MaxLengthValidator());
-        validatorMap.put("rangeLength", new RangeLengthValidator());
-        validatorMap.put("range", new RangeValidator());
-        validatorMap.put("mobile", new MobileValidator());
-        validatorMap.put("chinese", new ChineseValidator());
-        validatorMap.put("email", new EmailValidator());
-        validatorMap.put("required", new RequiredValidator());
-        validatorMap.put("regex", new RegexValidator());
+        validatorMap.put("num", NumValidator.class);
+        validatorMap.put("min", MinValidator.class);
+        validatorMap.put("max", MaxValidator.class);
+        validatorMap.put("minLength", MinLengthValidator.class);
+        validatorMap.put("maxLength", MaxLengthValidator.class);
+        validatorMap.put("rangeLength", RangeLengthValidator.class);
+        validatorMap.put("range", RangeValidator.class);
+        validatorMap.put("mobile", MobileValidator.class);
+        validatorMap.put("chinese", ChineseValidator.class);
+        validatorMap.put("email", EmailValidator.class);
+        validatorMap.put("required", RequiredValidator.class);
+        validatorMap.put("regex", RegexValidator.class);
+        validatorMap.put("datetime", DateTimeValidator.class);
     }
 
     public Validator getValidator(String name) {
         if (!validatorMap.containsKey(name)) {
             throw new IllegalArgumentException(String.format("Validator:%s不存在", name));
         }
-        return validatorMap.get(name);
+        try {
+            return (Validator) validatorMap.get(name).newInstance();
+        } catch (InstantiationException e) {
+            throw new JxlExcelException(e);
+        } catch (IllegalAccessException e) {
+            throw new JxlExcelException(e);
+        }
     }
 
-    public void registValidator(String name, Validator Validator) {
+    public void registValidator(String name, Class clasz) {
         if (validatorMap.containsKey(name)) {
             throw new IllegalArgumentException(String.format("Validator:%s已存在", name));
         }
-        validatorMap.put(name, Validator);
+        validatorMap.put(name, clasz);
     }
 }

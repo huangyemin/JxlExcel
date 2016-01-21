@@ -9,11 +9,12 @@ public class DataRow {
 
     public void addDataCol(String... names) {
         for (String name : names) {
-            dataCols.add(new DataCol(name));
+            addDataCol(new DataCol(name));
         }
     }
 
     public void addDataCol(DataCol dataCol) {
+        dataCol.setColIndex(dataCols.size());
         dataCols.add(dataCol);
     }
 

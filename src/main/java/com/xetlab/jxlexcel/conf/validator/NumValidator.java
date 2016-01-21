@@ -6,7 +6,7 @@ package com.xetlab.jxlexcel.conf.validator;
 public class NumValidator extends Validator {
 
     public NumValidator() {
-        errorMsg = "不是有效的数字";
+        defaultMsg = "不是有效的数字";
     }
 
     @Override
@@ -15,7 +15,7 @@ public class NumValidator extends Validator {
             new Float(input);
             return true;
         } catch (NumberFormatException e) {
-            errorMsg = "不是有效的数字";
+            defaultMsg = "不是有效的数字";
             return false;
         }
     }

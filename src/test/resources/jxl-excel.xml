@@ -19,12 +19,12 @@
             <titleCol>创建时间</titleCol>
         </titleRow>
         <dataRow>
-            <dataCol>area</dataCol>
-            <dataCol>name</dataCol>
-            <dataCol>idCard</dataCol>
-            <dataCol>bankAccount</dataCol>
-            <dataCol>amount</dataCol>
-            <dataCol convertor="datetime">createTime</dataCol>
+            <dataCol name="area"></dataCol>
+            <dataCol name="name"></dataCol>
+            <dataCol name="idCard"></dataCol>
+            <dataCol name="bankAccount"></dataCol>
+            <dataCol name="amount"></dataCol>
+            <dataCol name="createTime" convertor="datetime"></dataCol>
         </dataRow>
     </template>
     <template name="testWrite">
@@ -46,12 +46,38 @@
             <titleCol>创建时间</titleCol>
         </titleRow>
         <dataRow>
-            <dataCol>area</dataCol>
-            <dataCol>name</dataCol>
-            <dataCol>idCard</dataCol>
-            <dataCol>bankAccount</dataCol>
-            <dataCol>amount</dataCol>
-            <dataCol convertor="datetime">createTime</dataCol>
+            <dataCol name="area">
+                <validator name="required"></validator>
+            </dataCol>
+            <dataCol name="name">
+                <validator name="required"></validator>
+                <validator name="chinese"></validator>
+                <validator name="minLength">
+                    <property name="minLength">5</property>
+                </validator>
+            </dataCol>
+            <dataCol name="idCard">
+                <validator name="required"></validator>
+                <validator name="mobile"></validator>
+            </dataCol>
+            <dataCol name="bankAccount">
+                <validator name="required"></validator>
+                <validator name="email"></validator>
+                <validator name="maxLength">
+                    <property name="maxLength">10</property>
+                </validator>
+            </dataCol>
+            <dataCol name="amount">
+                <validator name="range">
+                    <property name="min">10</property>
+                    <property name="max">20</property>
+                </validator>
+            </dataCol>
+            <dataCol name="createTime" convertor="datetime">
+                <validator name="datetime">
+                    <property name="dateFormat">yyyy-MM-dd HH:mm:ss</property>
+                </validator>
+            </dataCol>
         </dataRow>
     </template>
 </templates>

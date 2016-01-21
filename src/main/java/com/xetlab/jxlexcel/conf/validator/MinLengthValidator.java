@@ -10,7 +10,7 @@ public class MinLengthValidator extends Validator {
 
     public void setMinLength(Integer minLength) {
         this.minLength = minLength;
-        errorMsg = "最小长度为" + minLength;
+        defaultMsg = "最小长度为" + minLength;
     }
 
     @Override

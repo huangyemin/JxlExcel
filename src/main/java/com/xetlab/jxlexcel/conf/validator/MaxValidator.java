@@ -9,7 +9,7 @@ public class MaxValidator extends Validator {
 
     public void setMax(Float max) {
         this.max = max;
-        errorMsg = "最大值为" + max;
+        defaultMsg = "最大值为" + max;
     }
 
     @Override
@@ -20,7 +20,7 @@ public class MaxValidator extends Validator {
         try {
             return new Float(input) <= max;
         } catch (NumberFormatException e) {
-            errorMsg = "不是有效的数值";
+            defaultMsg = "不是有效的数值";
             return false;
         }
     }

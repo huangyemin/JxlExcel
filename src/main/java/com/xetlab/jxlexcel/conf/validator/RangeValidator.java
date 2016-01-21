@@ -21,12 +21,12 @@ public class RangeValidator extends Validator {
         if (min == null || max == null) {
             throw new IllegalArgumentException("参数设置不正确");
         }
-        errorMsg = String.format("值必须在[%s-%s]间", min, max);
+        defaultMsg = String.format("值必须在[%s-%s]间", min, max);
         try {
             Float inputVal = new Float(input);
             return inputVal >= min && inputVal <= max;
         } catch (NumberFormatException e) {
-            errorMsg = "不是有效的数值";
+            defaultMsg = "不是有效的数值";
             return false;
         }
 

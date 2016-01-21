@@ -1,6 +1,9 @@
 package com.xetlab.jxlexcel.conf;
 
 import com.xetlab.jxlexcel.JxlExcelException;
+import com.xetlab.jxlexcel.conf.validator.Validator;
+import com.xetlab.jxlexcel.conf.validator.ValidatorUtil;
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.BeanUtilsBean;
 import org.apache.commons.beanutils.BeanUtilsBean2;
 import org.apache.commons.configuration.ConfigurationException;
@@ -15,6 +18,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -98,10 +102,25 @@ public class ExcelTemplateFactory {
                 List<HierarchicalConfiguration> dataCols = dataRowConfig.configurationsAt("dataCol");
                 DataRow dataRow = new DataRow();
                 for (HierarchicalConfiguration dataColConf : dataCols) {
-                    DataCol dataCol = new DataCol(dataColConf.getString(""));
+                    DataCol dataCol = new DataCol(dataColConf.getString("[@name]"));
                     String convertor = dataColConf.getString("[@convertor]");
                     if (StringUtils.isNotEmpty(convertor)) {
                         dataCol.setConvertor(convertor);
+                    }
+                    List<HierarchicalConfiguration> validatorConfs = dataColConf.configurationsAt("validator");
+                    for (HierarchicalConfiguration validatorConf : validatorConfs) {
+                        Validator validator = ValidatorUtil.getValidator(validatorConf.getString("[@name]"));
+                        List<HierarchicalConfiguration> propertyConfs = validatorConf.configurationsAt("property");
+                        dataCol.addValidator(validator);
+                        for (HierarchicalConfiguration propertyConf : propertyConfs) {
+                            try {
+                                BeanUtils.setProperty(validator, propertyConf.getString("[@name]"), propertyConf.getString(""));
+                            } catch (IllegalAccessException e) {
+                                throw new JxlExcelException(e);
+                            } catch (InvocationTargetException e) {
+                                throw new JxlExcelException(e);
+                            }
+                        }
                     }
                     dataRow.addDataCol(dataCol);
                 }

@@ -5,10 +5,13 @@ import com.xetlab.jxlexcel.conf.DummyTitleCol;
 import com.xetlab.jxlexcel.conf.TitleCol;
 import com.xetlab.jxlexcel.conf.TitleRow;
 import com.xetlab.jxlexcel.conf.convertor.ConvertorUtil;
+import com.xetlab.jxlexcel.conf.validator.ColValidateResult;
+import com.xetlab.jxlexcel.conf.validator.RowValidateResult;
 import jxl.Sheet;
 import jxl.Workbook;
 import jxl.read.biff.BiffException;
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -26,6 +29,8 @@ public class JxlExcelReader extends JxlExcel {
 
     private InputStream is;
 
+    private List<RowValidateResult> rowValidateResults = new ArrayList<RowValidateResult>();
+
     public JxlExcelReader(File excelFile) throws FileNotFoundException {
         this(new FileInputStream(excelFile));
     }
@@ -34,94 +39,66 @@ public class JxlExcelReader extends JxlExcel {
         this.is = is;
     }
 
+    public boolean isDataValid() {
+        return rowValidateResults.size() == 0;
+    }
+
+    public List<RowValidateResult> getRowValidateResults() {
+        return rowValidateResults;
+    }
+
     public <T> List<T> readBeans(final Class<T> clasz) {
         return read(new ReadPolicy<T>() {
             @Override
-            List<T> readDatasFromSheet(Sheet sheet) {
+            protected T newRowData() {
                 try {
-                    List<T> datas = new ArrayList<T>();
-                    for (int row = excelTemplate.getDataRowIndex(); row < sheet
-                            .getRows(); row++) {
-                        List<DataCol> properties = excelTemplate
-                                .getDataCols();
-                        T beanObj = clasz.newInstance();
-                        datas.add(beanObj);
-                        for (int col = 0; col < properties.size(); col++) {
-                            DataCol dataCol = properties.get(col);
-                            String propertyName = dataCol.getName();
-                            clasz.getDeclaredField(propertyName);
-                            String value = sheet.getCell(col, row)
-                                    .getContents().trim();
-                            String convertor = dataCol.getConvertor();
-                            if (StringUtils.isNotEmpty(convertor)) {
-                                BeanUtils.setProperty(beanObj, propertyName, ConvertorUtil.convertToType(value, convertor));
-                            } else {
-                                BeanUtils.setProperty(beanObj, propertyName, value);
-                            }
-
-                        }
-                    }
-                    return datas;
-                } catch (IllegalStateException e) {
+                    return clasz.newInstance();
+                } catch (InstantiationException e) {
                     throw new JxlExcelException(e);
+                } catch (IllegalAccessException e) {
+                    throw new JxlExcelException(e);
+                }
+            }
+
+            @Override
+            protected void setColData(T rowData, DataCol dataCol, Object colDataVal) {
+                try {
+                    BeanUtils.setProperty(rowData, dataCol.getName(), colDataVal);
                 } catch (IllegalAccessException e) {
                     throw new JxlExcelException(e);
                 } catch (InvocationTargetException e) {
                     throw new JxlExcelException(e);
-                } catch (InstantiationException e) {
-                    throw new JxlExcelException(e);
-                } catch (NoSuchFieldException e) {
-                    throw new JxlExcelException(e);
-                } catch (SecurityException e) {
-                    throw new JxlExcelException(e);
                 }
             }
+
         });
     }
 
     public List<String[]> readArrays() {
         return read(new ReadPolicy<String[]>() {
             @Override
-            List<String[]> readDatasFromSheet(Sheet sheet) {
-                int colCnt = excelTemplate.getColSize();
-                List<String[]> datas = new ArrayList<String[]>();
-                for (int row = excelTemplate.getDataRowIndex(); row < sheet
-                        .getRows(); row++) {
-                    String[] rowData = new String[colCnt];
-                    datas.add(rowData);
-                    for (int col = 0; col < colCnt; col++) {
-                        rowData[col] = sheet.getCell(col, row).getContents()
-                                .trim();
-                    }
-                }
-                return datas;
+            protected String[] newRowData() {
+                return new String[excelTemplate.getColSize()];
             }
+
+            @Override
+            protected void setColData(String[] rowData, DataCol dataCol, Object colDataVal) {
+                rowData[dataCol.getColIndex()] = ObjectUtils.toString(colDataVal);
+            }
+
         });
     }
 
     public List<Map<String, Object>> readMaps() {
         return read(new ReadPolicy<Map<String, Object>>() {
             @Override
-            List<Map<String, Object>> readDatasFromSheet(Sheet sheet) {
-                List<Map<String, Object>> datas = new ArrayList<Map<String, Object>>();
-                for (int row = excelTemplate.getDataRowIndex(); row < sheet
-                        .getRows(); row++) {
-                    List<DataCol> dataCols = excelTemplate.getDataCols();
-                    Map<String, Object> mapData = new HashMap<String, Object>();
-                    datas.add(mapData);
-                    for (int col = 0; col < dataCols.size(); col++) {
-                        String value = sheet.getCell(col, row).getContents()
-                                .trim();
-                        DataCol dataCol = dataCols.get(col);
-                        String convertor = dataCol.getConvertor();
-                        if (StringUtils.isNotEmpty(convertor)) {
-                            mapData.put(dataCol.getName(), ConvertorUtil.convertToType(value, convertor));
-                        } else {
-                            mapData.put(dataCol.getName(), value);
-                        }
-                    }
-                }
-                return datas;
+            protected Map<String, Object> newRowData() {
+                return new HashMap<String, Object>();
+            }
+
+            @Override
+            protected void setColData(Map<String, Object> rowData, DataCol dataCol, Object colDataVal) {
+                rowData.put(dataCol.getName(), colDataVal);
             }
         });
     }
@@ -146,7 +123,51 @@ public class JxlExcelReader extends JxlExcel {
     }
 
     abstract class ReadPolicy<T> {
-        abstract List<T> readDatasFromSheet(Sheet sheet);
+        List<T> readDatasFromSheet(Sheet sheet) {
+            List<T> datas = new ArrayList<T>();
+            for (int row = excelTemplate.getDataRowIndex(); row < sheet
+                    .getRows(); row++) {
+                List<DataCol> dataCols = excelTemplate.getDataCols();
+                T rowData = newRowData();
+
+                boolean isRowDataValid = true;
+                RowValidateResult rowValidateResult = new RowValidateResult();
+                for (int col = 0; col < dataCols.size(); col++) {
+                    String value = sheet.getCell(col, row).getContents()
+                            .trim();
+                    DataCol dataCol = dataCols.get(col);
+                    if (dataCol.hasValidator()) {
+                        ColValidateResult colValidateResult = dataCol.validate(value);
+                        rowValidateResult.setRowIndex(row);
+                        boolean isColDataValid = colValidateResult.isSuccess();
+                        isRowDataValid = isRowDataValid && isColDataValid;
+                        if (!isColDataValid) {
+                            rowValidateResult.addColValidateResult(colValidateResult);
+                        }
+                    }
+                    if (isRowDataValid) {
+                        String convertor = dataCol.getConvertor();
+                        Object colDataVal = null;
+                        if (StringUtils.isNotEmpty(convertor)) {
+                            colDataVal = ConvertorUtil.convertToType(value, convertor);
+                        } else {
+                            colDataVal = value;
+                        }
+                        setColData(rowData, dataCol, colDataVal);
+                    }
+                }
+                if (isRowDataValid) {
+                    datas.add(rowData);
+                } else {
+                    rowValidateResults.add(rowValidateResult);
+                }
+            }
+            return datas;
+        }
+
+        protected abstract void setColData(T rowData, DataCol dataCol, Object colDataVal);
+
+        protected abstract T newRowData();
 
         void checkTemplateTitles(Sheet sheet) {
             if (sheet.getColumns() != excelTemplate.getColSize()) {

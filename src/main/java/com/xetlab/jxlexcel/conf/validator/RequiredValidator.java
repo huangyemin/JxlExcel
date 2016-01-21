@@ -8,7 +8,7 @@ import org.apache.commons.lang.StringUtils;
 public class RequiredValidator extends Validator {
 
     public RequiredValidator() {
-        errorMsg = "不能为空";
+        defaultMsg = "不能为空";
     }
 
     @Override

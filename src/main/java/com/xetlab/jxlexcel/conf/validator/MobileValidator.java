@@ -7,7 +7,7 @@ public class MobileValidator extends RegexValidator {
 
     public MobileValidator() {
         setRegex("^1[3-8][0-9]\\d{8}$");
-        errorMsg = "不是正确的手机号";
+        defaultMsg = "不是正确的手机号";
     }
 
 }

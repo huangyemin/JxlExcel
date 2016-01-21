@@ -56,6 +56,22 @@ public class JxlExcelReaderTest extends Assert {
     }
 
     @Test
+    public void testReaderWithValidators() throws Exception {
+        JxlExcelReader reader = getJxlExcelReader();
+        reader.setExcelTemplate("testWrite");
+        List<String[]> datas = reader.readArrays();
+        assertEquals(293, reader.getRowValidateResults().size());
+        reader = getJxlExcelReader();
+        reader.setExcelTemplate("testWrite");
+        List<Account> beans = reader.readBeans(Account.class);
+        assertEquals(293, reader.getRowValidateResults().size());
+        reader = getJxlExcelReader();
+        reader.setExcelTemplate("testWrite");
+        List<Map<String, Object>> maps = reader.readMaps();
+        assertEquals(293, reader.getRowValidateResults().size());
+    }
+
+    @Test
     public void testErrorTemplate() throws Exception {
         JxlExcelReader reader = prepareReader(true);
 

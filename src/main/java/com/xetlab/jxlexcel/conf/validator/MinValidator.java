@@ -9,7 +9,7 @@ public class MinValidator extends Validator {
 
     public void setMin(Float min) {
         this.min = min;
-        errorMsg = "最小值为" + min;
+        defaultMsg = "最小值为" + min;
     }
 
     @Override
@@ -20,7 +20,7 @@ public class MinValidator extends Validator {
         try {
             return new Float(input) >= min;
         } catch (NumberFormatException e) {
-            errorMsg = "不是有效的数值";
+            defaultMsg = "不是有效的数值";
             return false;
         }
     }
